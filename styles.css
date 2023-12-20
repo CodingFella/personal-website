@@ -1,0 +1,182 @@
+body {
+    overflow: hidden;
+    background-color: white;
+}
+
+div {
+    font-family: "Futura";
+    font-size: 25px;
+    font-weight: 1000;
+    color: black;
+}
+
+nav {
+    position: fixed;
+    width: calc(100% - 70px);
+    display: flex;
+    justify-content: space-between;
+    height: 80px;
+    padding-top: 35px;
+    padding-left: 35px;
+    margin-bottom: 35px;
+    top: 0px;
+    z-index: 100;
+    background-color: white;
+}
+
+#logo {
+    position: relative;
+}
+
+
+
+.nav-element:hover {
+    color: darkgray;
+    cursor: pointer;
+}
+
+.nav-element {
+    position: static;
+    margin-left: 15px;
+    margin-right: 15px;
+    height: 30px;
+}
+
+#pages {
+    display: flex;
+}
+
+.blip {
+    color: white;
+    display:flex;
+    flex-direction: column;
+}
+
+.title {
+    font-size: 80px;
+}
+
+.block {
+    position: relative;
+    top: calc(100% - 160px);
+    margin-left: 100px;
+    left: 30%;
+    transform: translate(-50%, -50%);
+    width: 40%;
+    height: auto;
+    overflow-wrap: normal;
+}
+
+.page {
+    position: fixed;
+    display: flex;
+    top: 80px;
+    left: 0px;
+    height: calc(100vh - 80px);
+    width: 100%;
+    transition: transform 0.75s ease-in-out; /* Add a transition effect */
+}
+
+#page1 {
+    transform: translateY(0%);
+}
+
+#page2 {
+    transform: translateY(100%);
+}
+
+#page3 {
+    transform: translateY(100%);
+}
+
+#page4 {
+    transform: translateY(100%);
+}
+
+.down-arrow {
+    position: absolute;
+    top: calc(100vh - 240px);
+    left: calc(50% - 14px);
+    width: 0;
+    height: 30px;
+    border: 2px solid;
+    border-radius: 2px;
+    animation: jumpInfinite 2s infinite;
+}
+  
+.down-arrow:after {
+    content: " ";
+    position: absolute;
+    top: 12px;
+    left: -10px;
+    width: 16px;
+    height: 16px;
+    border-bottom: 4px solid;
+    border-right: 4px solid;
+    border-radius: 4px;
+    transform: rotateZ(45deg);
+}
+
+.scroll-text {
+    position: static;
+    width: 100px;
+    margin-top: 30px;
+    margin-left: calc(50% - 30px);
+
+}
+
+@keyframes jumpInfinite {
+    0% {
+      margin-top: 0;
+    }
+    50% {
+      margin-top: 20px;
+    }
+    100% {
+      margin-top: 0;
+    }
+}
+
+.line {
+    width: 100px;
+    height: 5px;
+    border-radius: 2px;
+    background-color: black;
+}
+
+#line1 {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+#line2 {
+    margin-bottom: 15px;
+    margin-left: 50px;
+}
+
+.portfolio {
+    position: absolute;
+    top: calc(50% - 80px);
+    margin-left: 100px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.portfolio-text {
+    text-shadow: 0px 0px 19px white;
+}
+
+.capy {
+    position: absolute;
+    width: 50%;
+    left: 75%;
+}
+
+img {
+    width: 20vw;
+    height: auto;
+    position: absolute;
+    top: calc(50vh - 80px); /* Positions the top of the image at 50% of the parent's height */
+    transform: translate(-50%, -50%); /* Centers the image */
+    max-width: 40vw;
+}
