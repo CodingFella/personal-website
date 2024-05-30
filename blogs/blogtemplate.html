@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="blogstyles.css">
+</head>
+<body>
+    <nav>
+        <a href="index.html">
+            <div class="nav-element" id="logo">
+                Jacob Lin
+            </div>
+        </a>
+    </nav>
+    <main class="content">
+        <!-- title -->
+        <h1></h1>
+        
+        <!-- author + date -->
+        <div class="article-meta">
+            <p class="name">Jacob Lin</p>
+            <p class="date">March 18, 2024</p>
+        </div>
+        
+        <!-- subheader -->
+
+        <h2></h2>
+        
+        <!-- body text -->
+
+        <p>Sometimes, when you run, you might be inclined to put on music 
+            from your favorite artists or with a higher beats per minute (BPM) to motivate you to run faster or more efficiently, 
+            but does it really help?</p>
+
+        <h2>Gathering Data</h2>
+        <p>My running data was gathered from Strava and my music data was gathered from Spotify. 
+            I used each application’s respective data takeout service to gather my lifelong data 
+            on each platform. The running data was in the form of <code>.fit</code> files, which is standard 
+            for Garmin devices, which was the brand of the watch I used to record my runs, and 
+            the music data was nicely packaged into <code>.json</code> files.</p>
+
+        <h2>Cleaning Up Data</h2>
+        <p>The only data I needed were songs that were being listened to during a running activity. Since 
+            I also use Spotify outside of running, there are many songs that are not important. Using Python, 
+            I iterated through the songs in the <code>.json</code> files until its time stamp landed in a running 
+            activity. Since songs are shorter than running activities, I chose to iterate through each song 
+            to wait until it hit a running activity, then loop and record each song’s data until it reached 
+            the end of the running activity and repeat. I placed the data I thought would be useful into a 
+            csv text file. Below is the driver function to convert the data into a csv file.</p>
+    </main>
+</body>
+</html>

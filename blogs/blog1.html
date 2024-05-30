@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Running vs. BPM</title>
+    <link rel="stylesheet" href="blogstyles.css">
+    <link rel="icon" type="image/png" href="../icon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+    <!-- and it's easy to individually load additional languages -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script>
+
+    <script>hljs.highlightAll();</script>
+
+</head>
+<body>
+    <nav>
+        <a href="index.html">
+            <div class="nav-element" id="logo">
+                Jacob Lin
+            </div>
+        </a>
+    </nav>
+    <main class="content">
+        <h1>Does the music you listen to affect your running pace?</h1>
+        
+        <div class="article-meta">
+            <p class="name">Jacob Lin</p>
+            <p class="date">March 18, 2024</p>
+        </div>
+
+        <h2>Introduction</h2>
+        <p>Sometimes, when you run, you might be inclined to put on music 
+            from your favorite artists or with a higher beats per minute (BPM) to motivate you to run faster or more efficiently, 
+            but does it really help?</p>
+
+        <h2>Gathering Data</h2>
+        <p>My running data was gathered from Strava and my music data was gathered from Spotify. 
+            I used each application’s respective data takeout service to gather my lifelong data 
+            on each platform. The running data was in the form of <code>.fit</code> files, which is standard 
+            for Garmin devices, which was the brand of the watch I used to record my runs, and 
+            the music data was nicely packaged into <code>.json</code> files.</p>
+
+        <h2>Cleaning Up Data</h2>
+        <p>The only data I needed were songs that were being listened to during a running activity. Since 
+            I also use Spotify outside of running, there are many songs that are not important. Using Python, 
+            I iterated through the songs in the <code>.json</code> files until its time stamp landed in a running 
+            activity. Since songs are shorter than running activities, I chose to iterate through each song 
+            to wait until it hit a running activity, then loop and record each song’s data until it reached 
+            the end of the running activity and repeat. I placed the data I thought would be useful into a 
+            csv text file. Below is the driver function to convert the data into a csv file.</p>
+        <pre>
+            <code class="python">def compute():
+    musicmanager = MusicManager()
+    activitymanager = ActivityManager("activities_txt_form")
+    num_activities = 853
+    for i in range(num_activities):
+        activity_start_time = activitymanager.getStartTime()
+        activity_end_time = activitymanager.getEndTime()
+        activity_avg_pace = activitymanager.getAveragePaceFromSpeedField()
+        activity_sport = activitymanager.getSportType()
+
+        if(activity_sport == "Run"):
+            song_start_time = musicmanager.getCurrentStartTime()
+            song_end_time = musicmanager.getCurrentEndTime()
+
+        while(song_end_time < activity_start_time):
+            if(musicmanager.nextSong()):
+                song_start_time = musicmanager.getCurrentStartTime()
+                song_end_time = musicmanager.getCurrentEndTime()
+            else:
+                break
+
+        while(song_start_time < activity_end_time):
+            avg_pace_during_song = activitymanager.getAveragePaceBetweenTimes(song_start_time, song_end_time)
+            distance_during_song = activitymanager.getDistanceBetweenTimes(song_start_time, song_end_time)
+
+            # make sure duration_played is more than 30 seconds (30000)
+            duration_played = musicmanager.getDurationPlayed()
+            threshold_ms = 30000
+
+            if(avg_pace_during_song != -1 and musicmanager.getTrackName() != None 
+                and musicmanager.getArtistName() != None and duration_played > threshold_ms):
+
+                data_str = (musicmanager.getTrackName() + "|" + 
+                            musicmanager.getArtistName() + "|" + 
+                            str(avg_pace_during_song) + "|" + 
+                            str(activity_avg_pace) + "|" + 
+                            str(distance_during_song) + "|" + 
+                            str(musicmanager.getMsPlayed()) + "|" + 
+                            activitymanager.getCurrentFileName())
+                
+                with open("output.txt", "a") as file:
+                    file.write(data_str + '\n')
+
+            if(musicmanager.nextSong()):
+                song_start_time = musicmanager.getCurrentStartTime()
+                song_end_time = musicmanager.getCurrentEndTime()
+            else:
+                break
+
+    activitymanager.nextFile()</code>
+        </pre>
+
+        <h2>Analyzing Data</h2>
+        <p>In total, there were 4268 data points, meaning I listened to a total of 4268 songs while running. 
+            Each field had 7 attributes: the song’s name, the artist’s name, the average pace (m/s) while 
+            listening to the song, the average pace (m/s) of the whole run that it took place in, the distance 
+            traveled (m), the duration of the song played (ms), and the activity’s file name. Some fields were 
+            for the sake of making sure my data was accurate. Some ways I made sure that all the data was relevant 
+            would be that I would ensure that the track was playing for a minimum of 30 seconds and I would go and 
+            check each activity’s respective post on Strava to see if the paces were relatively lined up.</p>
+        
+        <p>On Excel, I put some formulas to work. Using the average pace (m/s) while listening to the song (songAverage) 
+            and the average pace (m/s) of the whole run that it took place in (wholeAverage), I took the percent difference to 
+            see how much faster I was running during each song. </p>
+        
+        
+        <img src="https://latex.codecogs.com/svg.image?\text{percent&space;difference}=\frac{\text{songAverage}-\text{wholeAverage}}{\text{wholeAverage}}">
+            
+        <p>From there, I averaged the perecent difference based on the artist’s 
+            name. From there, I found the Z-score of each artist to see if there was a statistically significant difference. 
+            Using an alpha level of 0.05, the critical Z-value would be &plusmn;1.96, so anything beyond that would be statistically 
+            significant.</p>
+        
+        <h4>Correlation with Artist</h4>
+        <p>Looking at the data with listening to artists that have been played more than 20 times, here are the results:</p>
+
+        <div class="datatable">
+            <table data-table-theme="zebra">
+                <tr>
+                    <th>Artist Name</th>
+                    <th>% Difference</th>
+                    <th>Num. Songs</th>
+                    <th>Z-score</th>
+                </tr>
+                <tr>
+                    <td>BTS</td>
+                    <td>-1.166346952</td>
+                    <td>50</td>
+                    <td>0.611699734</td>
+                </tr>
+                <tr>
+                    <td>IU</td>
+                    <td>0.925553442</td>
+                    <td>219</td>
+                    <td>-1.666986366</td>
+                </tr>
+                <tr>
+                    <td>BLACKPINK</td>
+                    <td>0.50795153</td>
+                    <td>638</td>
+                    <td>-1.841058427</td>
+                </tr>
+                <tr>
+                    <td>TWICE</td>
+                    <td>0.415595481</td>
+                    <td>443</td>
+                    <td>-1.349059968</td>
+                </tr>
+                <tr>
+                    <td>JENNIE</td>
+                    <td>1.554615128</td>
+                    <td>40</td>
+                    <td>-1.091188626</td>
+                </tr>
+                <tr>
+                    <td>EVERGLOW</td>
+                    <td>0.740626628</td>
+                    <td>93</td>
+                    <td>-0.916524881</td>
+                </tr>
+                <tr>
+                    <td>NIKI</td>
+                    <td>-1.07203941</td>
+                    <td>28</td>
+                    <td>0.410245929</td>
+                </tr>
+                <tr>
+                    <td>Jay Chou</td>
+                    <td>1.312628126</td>
+                    <td>21</td>
+                    <td>-0.685070149</td>
+                </tr>
+                <tr>
+                    <td>AJR</td>
+                    <td>-1.260588134</td>
+                    <td>18</td>
+                    <td>0.405084368</td>
+                </tr>
+                <tr>
+                    <td>ITZY</td>
+                    <td>-0.091957757</td>
+                    <td>96</td>
+                    <td>-0.154572406</td>
+                </tr>
+                <tr>
+                    <td>Hans Zimmer</td>
+                    <td>1.675291875</td>
+                    <td>26</td>
+                    <td>-0.938324985</td>
+                </tr>
+                <tr>
+                    <td>Billy Joel</td>
+                    <td>1.550918709</td>
+                    <td>16</td>
+                    <td>-0.688720666</td>
+                </tr>
+                <tr>
+                    <td>Olivia Rodrigo</td>
+                    <td>0.26623313</td>
+                    <td>88</td>
+                    <td>-0.467880831</td>
+                </tr>
+                <tr>
+                    <td>JEON SOMI</td>
+                    <td>1.535741524</td>
+                    <td>49</td>
+                    <td>-1.195146937</td>
+                </tr>
+                <tr>
+                    <td>ROSÉ</td>
+                    <td>-0.410918776</td>
+                    <td>107</td>
+                    <td>0.150915629</td>
+                </tr>
+                <tr>
+                    <td>OH MY GIRL</td>
+                    <td>-0.803277289</td>
+                    <td>26</td>
+                    <td>0.264856614</td>
+                </tr>
+                <tr>
+                    <td>Leslie Odom Jr.</td>
+                    <td>1.336558079</td>
+                    <td>31</td>
+                    <td>-0.845034787</td>
+                </tr>
+                <tr>
+                    <td>LOONA</td>
+                    <td>0.886140843</td>
+                    <td>53</td>
+                    <td>-0.792748376</td>
+                </tr>
+                <tr>
+                    <td>aespa</td>
+                    <td>-0.234593729</td>
+                    <td>105</td>
+                    <td>-0.022510827</td>
+                </tr>
+                <tr>
+                    <td>Red Velvet</td>
+                    <td>-0.10579446</td>
+                    <td>82</td>
+                    <td>-0.130929153</td>
+                </tr>
+                <tr>
+                    <td>Taylor Swift</td>
+                    <td>0.551957907</td>
+                    <td>152</td>
+                    <td>-0.95027735</td>
+                </tr>
+                <tr>
+                    <td>TOMORROW X TOGETHER</td>
+                    <td>-1.422667749</td>
+                    <td>50</td>
+                    <td>0.784248681</td>
+                </tr>
+                <tr>
+                    <td>LISA</td>
+                    <td>-0.675523221</td>
+                    <td>34</td>
+                    <td>0.231956932</td>
+                </tr>
+                <tr>
+                    <td>JO YURI</td>
+                    <td>1.447134941</td>
+                    <td>24</td>
+                    <td>-0.795103408</td>
+                </tr>
+                <tr>
+                    <td>YOASOBI</td>
+                    <td>0.429172361</td>
+                    <td>152</td>
+                    <td>-0.806161248</td>
+                </tr>
+                <tr>
+                    <td>IVE</td>
+                    <td>0.593901805</td>
+                    <td>113</td>
+                    <td>-0.86179432</td>
+                </tr>
+                <tr>
+                    <td>ENHYPEN</td>
+                    <td>-0.576480285</td>
+                    <td>25</td>
+                    <td>0.151756283</td>
+                </tr>
+                <tr>
+                    <td>STAYC</td>
+                    <td>-1.054822567</td>
+                    <td>36</td>
+                    <td>0.455340752</td>
+                </tr>
+                <tr>
+                    <td>(G)I-DLE</td>
+                    <td>-1.940127475</td>
+                    <td>45</td>
+                    <td>1.074469238</td>
+                </tr>
+                <tr>
+                    <td>Lin-Manuel Miranda</td>
+                    <td>0.580685285</td>
+                    <td>23</td>
+                    <td>-0.382767584</td>
+                </tr>
+                <tr>
+                    <td>LE SSERAFIM</td>
+                    <td>0.331244956</td>
+                    <td>76</td>
+                    <td>-0.488767548</td>
+                </tr>
+                <tr>
+                    <td>SEVENTEEN</td>
+                    <td>0.024749359</td>
+                    <td>21</td>
+                    <td>-0.123210174</td>
+                </tr>
+                <tr>
+                    <td>NewJeans</td>
+                    <td>1.035887993</td>
+                    <td>61</td>
+                    <td>-0.961820583</td>
+                </tr>
+                <tr>
+                    <td>Joe Hisaishi</td>
+                    <td>0.623766007</td>
+                    <td>42</td>
+                    <td>-0.543824258</td>
+                </tr>
+            </table>
+        </div>
+
+        <p>Since none of the Z-scores are beyond the critical Z-value of &plusmn;1.96, there is no correlation between pace
+            and artist.
+        </p>
+
+        <h4>Correlation with BPM</h4>
+        <p>However, one could argue that artists have a combination of slow and fast songs, which will make the correlation
+            appear diluted. As a result, I decided to investigate to see if the song's BPM would affect my pace. To put this to the test, 
+            I took every song and counted how many times I listened to each song, and if I listened to it 5 or more times, I kept it. 
+            Then, I plotted the average percent difference on the y axis and its BPM on the x axis. The scatterplot’s trendline had an 
+            R&sup2; value of 0.0114, meaning there is little to no correlation between the two axes.
+        </p>
+
+        <img src="assets/scatter.png">
+
+        <p>Visually speaking, there is no trend, and that is backed up by the low R&sup2; value.</p>
+
+        <h2>Conclusion</h2>
+
+        <p>While there is no statistically significant trend with listening to a specific artist or listening to tracks with a certain BPM, 
+            listening to music does help with making runs go by faster by letting me take my mind off of running. Nonetheless, while music 
+            does not affect my running, the most important step is still just going outside and keeping my body healthy.</p>
+    </class>
+    <footer>
+        
+    </footer>
+    <script src="blogscript.js"></script>
+</body>
+</html>

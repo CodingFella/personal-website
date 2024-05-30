@@ -1,3 +1,19 @@
+@font-face { 
+    font-family: "Futura";
+    font-style: normal;
+    font-weight: 400;
+    src: 
+      url(assets/Futura\ Book\ font.ttf) format("truetype");
+}
+
+@font-face { 
+    font-family: "Futura Bold";
+    font-style: bold;
+    font-weight: 400;
+    src: 
+      url(assets/Futura\ Bold\ font.ttf) format("truetype");
+}
+
 body {
     overflow: hidden;
     background-color: white;
@@ -6,7 +22,7 @@ body {
 div {
     font-family: "Futura";
     font-size: 25px;
-    font-weight: 1000;
+    font-weight: 1;
     color: black;
 }
 
@@ -22,10 +38,15 @@ nav {
     top: 0px;
     z-index: 100;
     background-color: white;
+    font-family: "Futura Bold";
+    font-size: 25px;
+    font-weight: 1;
+    color: black;
 }
 
 #logo {
     position: relative;
+    text-shadow: 0.5px 0.5px 0 #000000;
 }
 
 
@@ -37,9 +58,14 @@ nav {
 
 .nav-element {
     position: static;
-    margin-left: 15px;
-    margin-right: 15px;
     height: 30px;
+    width: 140px;
+    text-align: center;
+    display: inline-block;
+}
+
+#contact {
+    margin-right: 15px;
 }
 
 #pages {
@@ -74,7 +100,7 @@ nav {
     left: 0px;
     height: calc(100vh - 80px);
     width: 100%;
-    transition: transform 0.75s ease-in-out; /* Add a transition effect */
+    transition: transform 0.55s ease-in-out; /* Add a transition effect */
 }
 
 #page1 {
@@ -94,8 +120,8 @@ nav {
 }
 
 .down-arrow {
-    position: absolute;
-    top: calc(100vh - 240px);
+    position: fixed;
+    top: calc(100vh - 200px);
     left: calc(50% - 14px);
     width: 0;
     height: 30px;
@@ -167,16 +193,255 @@ nav {
 }
 
 .capy {
+    position: static;
+    width: 360px;
+}
+
+.gallery {
+    z-index: -1;
+    position: relative;
+    
+    top: calc(100% - 200px);
+    left: 30%;
+    transform: translate(-50%, -50%);
+    width: 40%;
+    height: auto;
+    overflow-wrap: normal;
+
+    display:flex;
+    flex-direction:column;
+
+    align-items: center;
+
+}
+
+@media (max-width: 900px) {
+    .gallery {
+        display: none;
+    }
+
+    .block {
+        width: auto;
+    }
+}
+
+.blips {
+    z-index: 101;
+    display: flex;
+    flex-direction: column;
     position: absolute;
-    width: 50%;
-    left: 75%;
+    top: 50%;
+    left: 50px; /* Adjust this as needed */
+    transform: translateY(-50%);
+
+}
+
+.blip {
+    height: 5px;
+    width: 5px;
+    background-color: black;
+    border-radius: 50%;
+    margin: 5px;
+    /* border-radius: ; */
+    display: inline-block;
+}
+
+.on {
+    height: 3px;
+    width: 3px;
+	border: 2px solid black;
+    background-color: black;
+}
+
+.off {
+    height: 3px;
+    width: 3px;
+	border: 2px solid black;
+    background-color: white;
+}
+
+.hidden {
+    display: none;
+}
+
+#app {
+    position: static;
+    width: 360px;
+}
+
+#control {
+    position: relative;
+    width: 360px;
 }
 
 img {
     width: 20vw;
-    height: auto;
-    position: absolute;
-    top: calc(50vh - 80px); /* Positions the top of the image at 50% of the parent's height */
-    transform: translate(-50%, -50%); /* Centers the image */
     max-width: 40vw;
 }
+
+/* CSS */
+.button-30 {
+    align-items: center;
+    appearance: none;
+    background-color: #FCFCFD;
+    border-radius: 4px;
+    border-width: 0;
+    box-shadow: rgba(45, 35, 66, 0.4) 0 2px 4px,rgba(45, 35, 66, 0.3) 0 7px 13px -3px,#D6D6E7 0 -3px 0 inset;
+    box-sizing: border-box;
+    color: black;
+    cursor: pointer;
+    display: inline-flex;
+    font-family: "Futura";
+    height: 48px;
+    justify-content: center;
+    line-height: 1;
+    list-style: none;
+    overflow: hidden;
+    padding-left: 16px;
+    padding-right: 16px;
+    position: relative;
+    text-align: left;
+    text-decoration: none;
+    transition: box-shadow .15s,transform .15s;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    white-space: nowrap;
+    will-change: box-shadow,transform;
+    font-size: 18px;
+    margin-top: 20px;
+  }
+  
+  .button-30:focus {
+    box-shadow: #D6D6E7 0 0 0 1.5px inset, rgba(45, 35, 66, 0.4) 0 2px 4px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #D6D6E7 0 -3px 0 inset;
+  }
+  
+  .button-30:hover {
+    box-shadow: rgba(45, 35, 66, 0.4) 0 4px 8px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #D6D6E7 0 -3px 0 inset;
+    transform: translateY(-2px);
+  }
+  
+  .button-30:active {
+    box-shadow: #D6D6E7 0 3px 7px inset;
+    transform: translateY(2px);
+  }
+
+  .underline {
+    font-weight: bold;
+    text-shadow: 0.5px 0.5px 0 #000000; /* Very subtle shadow */
+}
+
+
+/* for mobile */
+@media only screen and (max-width: 750px) {
+    nav {
+        display: none;
+    }
+
+    .title {
+        font-size: 40px;
+    }
+
+    .blips {
+        margin-left: -20px;
+    }
+
+    .page {
+        position: fixed;
+        display: flex;
+        flex-direction: column-reverse;
+        justify-content: space-evenly;
+        padding-top: 25vw;
+        top: 80px;
+        left: 0px;
+        height: calc(100vh);
+        width: 100%;
+        transition: transform 0.55s ease-in-out; /* Add a transition effect */
+    }
+
+    .block {
+        position: relative;
+        transform: translateY(-110vh);
+        margin-left: 100px;
+        left: 0%;
+        width: auto;
+        height: auto;
+        overflow-wrap: normal;
+    }
+
+    .gallery {
+        position: relative;
+        transform: translateY(-90vh);
+        display:block;
+        width: 360px;
+    }
+
+    #app {
+        position: relative;
+        top: -40px;
+        display:block;
+        width: 300vw;
+        max-width: 50vw;
+    }
+
+    a {
+        text-decoration: none;
+    }
+
+    #clickme {
+        display: none;
+    }
+
+    .description {
+        font-size: 20px;
+    }
+
+    .button-30 {
+        font-size: 15px;
+    }
+    @keyframes jumpInfinite {
+        0% {
+          margin-top: 0;
+        }
+        50% {
+          margin-top: 10px;
+        }
+        100% {
+          margin-top: 0;
+        }
+    }
+
+    .down-arrow {
+        z-index: 100;
+        position: fixed;
+        top: calc(75vh);
+        left: calc(75%);
+        width: 0;
+        height: 30px;
+        border: 1px solid;
+        border-radius: 2px;
+        animation: jumpInfinite 2s infinite;
+    }
+      
+    .down-arrow:after {
+        content: " ";
+        position: absolute;
+        top: 12px;
+        left: -9px;
+        width: 16px;
+        height: 16px;
+        border-bottom: 2px solid;
+        border-right: 2px solid;
+        border-radius: 2px;
+        transform: rotateZ(45deg);
+    }
+    
+    .scroll-text {
+        position: static;
+        width: 100px;
+        margin-top: 30px;
+        margin-left: calc(50% - 30px);
+    
+    }
+
+  }
